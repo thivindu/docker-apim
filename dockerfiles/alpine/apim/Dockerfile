@@ -19,6 +19,8 @@
 # set base Docker image to Alpine
 FROM alpine:3.21.3
 
+LABEL com.googleapis.cloudmarketplace.product.service.name="services/wso2-apim-apk.endpoints.wso2-marketplace-public.cloud.goog"
+
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 # install dependencies
@@ -92,11 +94,14 @@ RUN \
 
 # copy init script to user home
 COPY --chown=wso2carbon:wso2 docker-entrypoint.sh ${USER_HOME}/
+
+# copy WSO2 product distribution to the image
+COPY --chown=wso2carbon:wso2 ${WSO2_SERVER}.zip ${USER_HOME}/
     
 # add the WSO2 product distribution to user's home directory
 RUN \
-    wget -O ${WSO2_SERVER}.zip "${WSO2_SERVER_DIST_URL}" \
-    && unzip -d ${USER_HOME} ${WSO2_SERVER}.zip \
+    # wget -O ${WSO2_SERVER}.zip "${WSO2_SERVER_DIST_URL}" \
+    unzip -d ${USER_HOME} ${WSO2_SERVER_HOME}.zip \
     && chown wso2carbon:wso2 -R ${WSO2_SERVER_HOME} \
     && mkdir ${USER_HOME}/wso2-tmp \
     && bash -c 'mkdir -p ${USER_HOME}/solr/{indexed-data,database}' \
